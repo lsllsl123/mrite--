@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mrite Math Modeling"
+  short_description: "Solve math modeling contests and generate LaTeX papers."
+  default_prompt: "Use $mrite to solve the math modeling contest problem in this workspace and generate the final paper."
