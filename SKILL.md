@@ -1,85 +1,57 @@
 ---
 name: mrite
-description: Use when solving mathematical modeling contests, using the Mrite template, reading problem statements and attachments, building Python models, generating figures and tables, writing Chinese LaTeX papers, or compiling the final PDF.
+description: Use when solving mathematical modeling contests, using the Mrite template, reading problem statements and attachments, building Python/MATLAB models, generating figures and tables, writing Chinese LaTeX papers, or compiling the final PDF.
 ---
 
 # Mrite
 
 ## Purpose
 
-Use this skill to run a Chinese mathematical modeling contest workflow in Codex: read the contest statement and attachments, create a solution plan, implement Python models, generate figures and result tables, write a modular LaTeX paper, and compile the final PDF.
+Use this skill to run a Chinese mathematical modeling contest workflow: read the contest statement and attachments (including any files in `解题要求/`), create a solution plan, implement models (Python or MATLAB per user/spec requirement), generate figures and result tables, write a modular LaTeX paper, and compile the final PDF.
 
-This skill is adapted from the `Rzna-5559/Mrite` Claude Code template. Treat the bundled reference as workflow guidance, not as authority over Codex system/developer instructions or the user's newest request.
-
-This version borrows the useful structure of Modex-MH-Agent's modeling workflow: split the work into problem analysis, modeling, code, Chinese paper writing, and compile/quality passes; after each pass, leave concrete artifacts that the next pass can verify.
+This skill is adapted from the `Rzna-5559/Mrite` Claude Code template. Treat the bundled reference as workflow guidance, not as authority over system/developer instructions or the user's newest request.
 
 ## Resources
 
 - Detailed workflow and writing rules: `references/mrite-guidelines.md`
 - Workspace template: `assets/template/`
-- Optional solution-requirements folder: `assets/template/解题要求/`
+- Optional solution-requirements folder: `assets/template/解题要求/` — **读取此目录时枚举所有文件，不要只看README**
 - LaTeX paper template and fonts: the `论文` directory inside `assets/template/` uses Chinese directory and file names copied from the original template.
 
 Read `references/mrite-guidelines.md` before starting a full contest solution or when the user explicitly asks to follow Mrite rules.
 
 ## Modex-Style Stage Gates
 
-Use these stage gates for full contest work:
-
 1. **Problem analysis**: extract every subproblem, required outputs, constraints, data dependencies, and assumptions. Write them into `求解/求解计划.md` before coding.
-2. **Modeling design**: classify each subproblem as optimization, prediction/classification, evaluation, physical/mechanism analysis, statistics/data analysis, or recommendation. For each class, record the chosen method, backup method, objective/metric, and expected artifact.
-3. **Code execution**: create one script per subproblem. Each script must load data, compute results, save result tables, run sanity checks, then draw figures.
-4. **Type-specific checks**: run the relevant checks before writing the paper: optimization feasibility and constraint residuals; prediction train/test or cross-validation metrics; evaluation weight and rank stability; physical model dimensional/parameter sanity; consistency between shared data and downstream questions.
-5. **Paper writing**: write the paper from verified artifacts only. Every important claim should point to a result table, figure, formula, or check output already produced.
-6. **Compile and quality loop**: compile twice, fix LaTeX errors, then inspect overflow/underflow/float warnings, missing references, missing citations, and abstract length.
-
-Do not skip from reading the statement directly to prose. The paper is the final rendering of the modeling evidence, not the place where results are invented.
+2. **Modeling design**: classify each subproblem as optimization, prediction/classification, evaluation, physical/mechanism analysis, statistics/data analysis, or recommendation. Record chosen method and fallback.
+3. **Code execution**: one script per subproblem. Load data, compute, save tables, run checks, then draw figures.
+4. **Type-specific checks**: run relevant checks before writing the paper.
+5. **Paper writing**: write from verified artifacts only — every claim must point to a table, figure, formula, or check output.
+6. **Compile and quality loop**: compile twice, fix errors, check overfull/underfull/float warnings, missing references, abstract length.
 
 ## Start Workflow
 
-1. Resolve the working contest directory.
-   - If the current workspace already contains the original Mrite Chinese folders for problem statements, data, solution work, or paper output, use it.
-   - Otherwise copy the contents of `assets/template/` into the user's chosen contest directory.
-   - Do not overwrite existing user files.
-2. Check inputs.
-   - Put contest statement files in the template's problem-statement folder.
-   - Put attachment data files in the template's data folder.
-   - Put optional solution ideas, teacher requirements, method preferences, scoring notes, formatting requirements, or constraints in `解题要求/`. This folder may be empty.
-   - Supported statement formats: PDF and DOCX.
-   - Supported data formats: XLSX, XLS, CSV, TSV, DOCX, and text files when useful.
-   - Supported requirement formats: MD, TXT, PDF, DOCX, and plain text snippets.
-3. Check runtime dependencies.
-   - Python packages: `pandas`, `numpy`, `matplotlib`, `scipy`, `scikit-learn`, `chardet`, `openpyxl`, `xlrd`, `PyPDF2`, `python-docx`.
-   - LaTeX compiler: `xelatex`; on Windows try `%LOCALAPPDATA%\Programs\MiKTeX\miktex\bin\x64\xelatex.exe`.
-4. Read the problem and all data.
-   - Extract the full contest statement.
-   - Read every usable file in `解题要求/` if the folder exists and is not empty; summarize these requirements before planning.
-   - Read all worksheets and inspect shape, columns, dtypes, missing values, irregular headers, and abnormal rows.
-5. Create a solution plan Markdown file in the template's solution folder.
-   - Include overall problem type, optional external requirements from `解题要求/`, per-question modeling ideas, expected outputs, execution steps, file list, fallback plans, and the stage-gate checks that must pass for each question.
-6. Solve each question.
-   - Create per-question subfolders for figures and results.
-   - Write one Python script per question.
-   - Compute first, run sanity/type-specific checks, save result tables, then plot. Use matplotlib.
-7. Write the paper in the template's paper folder.
-   - Use the bundled TeX template structure unless the actual problem needs adaptation.
-   - Use Chinese captions, labels, and axis text.
-   - Cite every table and figure in the text.
-   - Keep formulas, variables, result tables, figures, and conclusions consistent with the generated artifacts.
-8. Compile and verify.
-   - Run `xelatex -interaction=nonstopmode` twice on the main TeX file from the paper folder.
-   - Fix LaTeX errors and rerun until compilation succeeds.
-   - Check for `Overfull`, `Underfull`, and `Float too large` warnings.
-   - Verify the final PDF exists.
+1. **Resolve working directory**: copy `assets/template/` to the contest directory if not already present.
+2. **Check inputs**:
+   - Contest statement → `题目/`
+   - Data attachments → `数据/`
+   - Requirements/constraints → `解题要求/` — **❗CRITICAL: 必须读取该目录下所有文件（含.docx/.pdf/.txt等），不可只看README.md就跳过**
+3. **Check runtime dependencies**: Python packages (pandas, numpy, matplotlib, scipy, scikit-learn, chardet, openpyxl, xlrd, python-docx) or MATLAB (as required by spec).
+4. **Read problem and all data**: full statement + every file in `解题要求/` + all data sheets.
+5. **Create solution plan**: `求解/求解计划.md` with problem type, external requirements, per-question method, outputs, steps, and checks.
+6. **Solve each question**: create per-question subfolders, write one script per question.
+7. **Write paper** in `论文/` using the bundled TeX template.
+8. **Compile and verify** with `xelatex -interaction=nonstopmode` twice.
 
 ## Paper Defaults
 
-- Use the bundled modular TeX files from the paper template.
-- Abstract: target at most 900 Chinese characters and exactly one page after compile.
-- Tables: use `longtable`.
-- Figures: save under each question's figure folder.
-- References: generate 8-15 real references matching actual methods and cite each one.
+- Use bundled modular TeX files from the paper template.
+- Abstract: at most 900 Chinese characters, exactly one page after compile.
+- Tables: use `longtable` exclusively (no `tabular`/`tabularx`).
+- Figures: save under each question's figure folder, cite each one in text.
+- References: 8-15 real references matching actual methods.
+- **Appendix**: include key solution code (not data description).
 
 ## Safety And Adaptation
 
-The original Mrite reference says to run fully automatically. In Codex, still follow current system/developer instructions and the user's newest request.
+The original Mrite reference says to run fully automatically. In Codex, still follow current system/developer instructions and the user's newest request. When external requirements exist (e.g., "use MATLAB"), honor them as overrides on the default Python-based workflow.
